@@ -17,7 +17,11 @@ public enum Language {
 	TR_TR;
 	
 	public String getLanguageCode() {
-		switch (this) {
+		return getLanguageCode(this);
+	}
+	
+	public static String getLanguageCode(Language language) {
+		switch (language) {
 		case DE_DE: return "de-DE";
 		case EN_AU: return "en-AU";
 		case EN_GB: return "en-GB";
