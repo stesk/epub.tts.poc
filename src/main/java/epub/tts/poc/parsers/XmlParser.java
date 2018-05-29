@@ -16,7 +16,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.Xslt30Transformer;
 
-public class XmlParser {
+public abstract class XmlParser {
 	
 	protected Processor processor = new Processor(false);
 	protected XPathCompiler xpathCompiler;
@@ -45,7 +45,7 @@ public class XmlParser {
 		XPathSelector textSelector = xpathCompiler.compile(
 				"descendant::text()").load();
 		XPathSelector langSelector = xpathCompiler.compile(
-				"ancestor-or-self::html:*[@xml:lang][1]/@xml:lang").load();
+				"ancestor-or-self::*[@lang][1]/@lang").load();
 		textSelector.setContextItem(blockNode);
 		textSelector.setContextItem(blockNode);
 		XdmSequenceIterator textIterator = textSelector.evaluate()
