@@ -1,6 +1,7 @@
 package epub.tts.poc.parsers;
 
 import java.io.File;
+import java.util.LinkedList;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -16,17 +17,21 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.Xslt30Transformer;
 
-public abstract class XmlParser {
+public class XmlParser {
 	
+	protected String blockXpath;
+	protected String divisionXpath;
 	protected Processor processor = new Processor(false);
 	protected XPathCompiler xpathCompiler;
 	
-	public XmlParser() {
+	public XmlParser(String divisionXpath, String blockXpath) {
+		this.blockXpath = blockXpath;
+		this.divisionXpath = divisionXpath;
 		xpathCompiler = processor.newXPathCompiler();
 		xpathCompiler.declareNamespace("html", "http://www.w3.org/1999/xhtml");
 	}
 	
-	public XdmNode getDocumentNode(File file, boolean preprocess)
+	protected XdmNode getDocumentNode(File file, boolean preprocess)
 			throws SaxonApiException {
 		DocumentBuilder documentBuilder = processor.newDocumentBuilder();
 		XdmNode document = documentBuilder.build(file);
@@ -39,17 +44,50 @@ public abstract class XmlParser {
 		return preprocessorDestination.getXdmNode();
 	}
 	
-	protected TextBlock parseBlock(XdmNode blockNode) throws SaxonApiException {
+	private XdmSequenceIterator iterateXpathOnNode(String xpath, XdmNode node)
+			throws SaxonApiException {
+		XPathSelector selector = xpathCompiler.compile(xpath).load();
+		selector.setContextItem(node);
+		return selector.evaluate().iterator();
+	}
+	
+	public LinkedList<TextDivision> parse(File htmlFile)
+			throws SaxonApiException {
+		// Generic implementation of file parsing. Subclasses can call this,
+		// supplying an appropriate XPath expression for their specific format,
+		// when overriding parse(File)
+		LinkedList<TextDivision> divisions = new LinkedList<TextDivision>();
+		XdmNode documentNode = getDocumentNode(htmlFile, true);
+		XdmSequenceIterator divisionIterator = iterateXpathOnNode(
+				divisionXpath, documentNode);
+		while (divisionIterator.hasNext())
+			divisions.add(parseDivision((XdmNode)divisionIterator.next()));
+		return divisions;
+	}
+	
+	private TextDivision parseDivision(XdmNode divisionNode)
+			throws SaxonApiException {
+		// Generic implementation of division parsing. Subclasses can call this,
+		// supplying an appropriate XPath expression for their specific format,
+		// when overriding parse(XdmNode)
+		TextDivision division = new TextDivision(divisionNode);
+		// We want the innermost block elements, e.g. block elements with no
+		// other block elements as their children
+		// TODO: Test this to make sure it works as intended
+		XdmSequenceIterator blockIterator = iterateXpathOnNode(
+				".//(" + blockXpath + ")", divisionNode);
+		while (blockIterator.hasNext())
+			division.add(parseBlock((XdmNode)blockIterator.next()));
+		return division;
+	}
+
+	private TextBlock parseBlock(XdmNode blockNode) throws SaxonApiException {
 		TextBlock textBlock = new TextBlock(blockNode.getAttributeValue(
 				new QName("id")));
-		XPathSelector textSelector = xpathCompiler.compile(
-				"descendant::text()").load();
 		XPathSelector langSelector = xpathCompiler.compile(
 				"ancestor-or-self::*[@lang][1]/@lang").load();
-		textSelector.setContextItem(blockNode);
-		textSelector.setContextItem(blockNode);
-		XdmSequenceIterator textIterator = textSelector.evaluate()
-				.iterator();
+		XdmSequenceIterator textIterator = iterateXpathOnNode(
+				"descendant::text()", blockNode);
 		while (textIterator.hasNext()) {
 			XdmNode textNode = (XdmNode)textIterator.next();
 			langSelector.setContextItem(textNode);
