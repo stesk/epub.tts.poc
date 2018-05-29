@@ -39,8 +39,12 @@ public class HtmlParser extends XmlParser {
 	private TextDivision parseDivision(XdmNode divisionNode)
 			throws SaxonApiException {
 		TextDivision division = new TextDivision();
+		String blockXpath = String.join("|", TEXT_BLOCK_ELEMENTS);
+		// We want the innermost block elements, e.g. block elements with no
+		// other block elements as their children
+		// TODO: Test this to make sure it works as intended
 		XPathSelector textBlockSelector = xpathCompiler.compile(
-				".//(" + String.join("|", TEXT_BLOCK_ELEMENTS) + ")").load();
+				".//(" + blockXpath + ")[not(" + blockXpath + ")]").load();
 		textBlockSelector.setContextItem(divisionNode);
 		XdmSequenceIterator blockIterator = textBlockSelector.evaluate()
 				.iterator();
