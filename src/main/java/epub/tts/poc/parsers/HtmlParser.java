@@ -13,10 +13,16 @@ import net.sf.saxon.s9api.XdmSequenceIterator;
 
 public class HtmlParser extends XmlParser {
 	
-	public static final String[] TEXT_BLOCK_ELEMENTS = new String[] {
+	public static final String[] HTML_TEXT_BLOCK_ELEMENTS = new String[] {
 			"html:dd",
 			"html:dt",
 			"html:figcaption",
+			"html:h1",
+			"html:h2",
+			"html:h3",
+			"html:h4",
+			"html:h5",
+			"html:h6",
 			"html:li",
 			"html:p",
 			"html:table"
@@ -39,7 +45,7 @@ public class HtmlParser extends XmlParser {
 	private TextDivision parseDivision(XdmNode divisionNode)
 			throws SaxonApiException {
 		TextDivision division = new TextDivision();
-		String blockXpath = String.join("|", TEXT_BLOCK_ELEMENTS);
+		String blockXpath = String.join("|", HTML_TEXT_BLOCK_ELEMENTS);
 		// We want the innermost block elements, e.g. block elements with no
 		// other block elements as their children
 		// TODO: Test this to make sure it works as intended
