@@ -56,7 +56,7 @@ public class XmlParser {
 			String langValue = langSelector.evaluateSingle()
 					.getStringValue();
 			textBlock.add(new TextFragment(Language.getLanguage(langValue),
-					textNode.getStringValue()));
+					textNode.getStringValue().replaceAll("\\s+", " ")));
 		}
 		return textBlock;
 	}

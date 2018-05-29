@@ -63,7 +63,7 @@ public class HtmlParser extends XmlParser {
 					System.out.println(block.getId());
 					for (TextFragment fragment : block)
 						System.out.println(fragment.getLanguage() + ": "
-								+ fragment.getText().replaceAll("\\s+", " "));
+								+ fragment.getText());
 				}
 			}
 		} catch (SaxonApiException e) {
