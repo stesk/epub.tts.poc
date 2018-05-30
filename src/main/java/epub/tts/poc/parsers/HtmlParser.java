@@ -3,17 +3,13 @@ package epub.tts.poc.parsers;
 import java.io.File;
 import java.util.LinkedList;
 
-import javax.xml.transform.stream.StreamSource;
-
 import epub.tts.poc.narration.BlockInput;
 import epub.tts.poc.narration.DivisionInput;
 import epub.tts.poc.narration.Language;
 import epub.tts.poc.narration.TextInput;
-import net.sf.saxon.s9api.DocumentBuilder;
-import net.sf.saxon.s9api.Processor;
+import epub.tts.poc.xml.XmlUtilities;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmNode;
@@ -37,22 +33,14 @@ public class HtmlParser {
 			"html:table"
 	};
 	
-	private Processor processor = new Processor(false);
-	private XPathCompiler xpathCompiler;
-	
 	public HtmlParser() {
-		xpathCompiler = processor.newXPathCompiler();
-		xpathCompiler.declareNamespace("html", "http://www.w3.org/1999/xhtml");
 	}
 	
 	protected XdmNode getDocumentNode(File file, String preprocessorXslt)
 			throws SaxonApiException {
-		DocumentBuilder documentBuilder = processor.newDocumentBuilder();
-		XdmNode document = documentBuilder.build(file);
-		Xslt30Transformer preprocessor = processor.newXsltCompiler().compile(
-				new StreamSource(getClass().getResourceAsStream(
-						preprocessorXslt)))
-				.load30();
+		XdmNode document = XmlUtilities.getDocumentNode(file);
+		Xslt30Transformer preprocessor = XmlUtilities.getXsltTransformer(
+				preprocessorXslt);
 		XdmDestination preprocessorDestination = new XdmDestination();
 		preprocessor.applyTemplates(document, preprocessorDestination);
 		return preprocessorDestination.getXdmNode();
@@ -60,7 +48,7 @@ public class HtmlParser {
 	
 	private XdmSequenceIterator iterateXpathOnNode(String xpath, XdmNode node)
 			throws SaxonApiException {
-		XPathSelector selector = xpathCompiler.compile(xpath).load();
+		XPathSelector selector = XmlUtilities.getXpathSelector(xpath);
 		selector.setContextItem(node);
 		return selector.evaluate().iterator();
 	}
@@ -101,8 +89,8 @@ public class HtmlParser {
 	private BlockInput parseBlock(XdmNode blockNode) throws SaxonApiException {
 		BlockInput block = new BlockInput(blockNode.getAttributeValue(
 				new QName("id")));
-		XPathSelector langSelector = xpathCompiler.compile(
-				"ancestor-or-self::*[@lang][1]/@lang").load();
+		XPathSelector langSelector = XmlUtilities.getXpathSelector(
+				"ancestor-or-self::*[@lang][1]/@lang");
 		XdmSequenceIterator textIterator = iterateXpathOnNode(
 				"descendant::text()", blockNode);
 		while (textIterator.hasNext()) {
