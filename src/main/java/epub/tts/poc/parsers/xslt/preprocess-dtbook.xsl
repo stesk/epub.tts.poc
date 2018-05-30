@@ -11,6 +11,8 @@
     <xsl:template match="/dtbook">
         <html lang="{book/@lang}" xml:lang="{book/@lang}">
             <head>
+                <meta http-equiv="content-type"
+                    content="application/xhtml+xml; charset=UTF-8" />
                 <title><xsl:value-of select="head/title"/></title>
             </head>
             <body>
@@ -20,7 +22,7 @@
         </html>
     </xsl:template>
     <xsl:template match="@*"/>
-    <xsl:template match="@id">
+    <xsl:template match="@height|@id|@src|@width">
         <xsl:copy/>
     </xsl:template>
     <xsl:template match="*">
@@ -28,6 +30,11 @@
             <xsl:call-template name="INSERT_ID_IF_MISSING"/>
             <xsl:apply-templates select="@*|node()"/>
        	</xsl:element>
+    </xsl:template>
+    <xsl:template match="imggroup">
+        <div class="image">
+            <xsl:apply-templates select="@*|node()"/>
+        </div>
     </xsl:template>
     <xsl:template match="level">
         <section>
@@ -60,11 +67,12 @@
             <xsl:apply-templates select="@*|node()"/>
         </a>
     </xsl:template>
-    <xsl:template match="pagenum">
-        <span class="{'page-' || @page}">
-            <xsl:call-template name="INSERT_ID_IF_MISSING"/>
+    <!-- TODO: Implement conversion of page breaks -->
+    <xsl:template match="pagenum"/>
+    <xsl:template match="prodnote[@class eq 'caption']">
+        <div>
             <xsl:apply-templates select="@*|node()"/>
-        </span>
+        </div>
     </xsl:template>
     <xsl:template name="INSERT_ID_IF_MISSING">
         <xsl:if test="not(@id)">
