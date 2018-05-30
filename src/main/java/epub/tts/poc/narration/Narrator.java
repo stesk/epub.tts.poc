@@ -3,6 +3,7 @@ package epub.tts.poc.narration;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
 
 import com.google.cloud.texttospeech.v1beta1.AudioConfig;
 import com.google.cloud.texttospeech.v1beta1.AudioEncoding;
@@ -10,6 +11,8 @@ import com.google.cloud.texttospeech.v1beta1.SsmlVoiceGender;
 import com.google.cloud.texttospeech.v1beta1.SynthesizeSpeechResponse;
 import com.google.cloud.texttospeech.v1beta1.TextToSpeechClient;
 import com.google.cloud.texttospeech.v1beta1.VoiceSelectionParams;
+
+import epub.tts.poc.output.NarrationOutput;
 
 public class Narrator {
 	
@@ -36,21 +39,29 @@ public class Narrator {
 		return ttsClient;
 	}
 	
-	public ByteBuffer narrate(Iterable<TextInput> inputs) {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		for (TextInput input : inputs) {
-			ByteBuffer byteBuffer = narrate(input);
-			while (byteBuffer.hasRemaining())
-				outputStream.write(byteBuffer.get());
+	public Iterable<NarrationOutput> narrate(Iterable<DivisionInput> divisions)
+			throws IOException {
+		LinkedList<NarrationOutput> outputs =
+				new LinkedList<NarrationOutput>();
+		int count = 1;
+		for (DivisionInput division : divisions) {
+			NarrationOutput output = new NarrationOutput(String.format(
+					"%03d", count++));
+			for (BlockInput block : division) {
+				output.mark(block.getId());
+				for (TextInput text : block)
+					output.addBytes(narrateText(text));
+			}
+			outputs.add(output);
 		}
-		return ByteBuffer.wrap(outputStream.toByteArray());
+		return outputs;
+		
 	}
 	
-	public ByteBuffer narrate(TextInput input) {
+	private byte[] narrateText(TextInput text) {
 		SynthesizeSpeechResponse response = ttsClient.synthesizeSpeech(
-				input.getInput(), createVoice(input.getLanguage()),
-				audioConfig);
-		return response.getAudioContent().asReadOnlyByteBuffer();
+				text.getInput(), createVoice(text.getLanguage()), audioConfig);
+		return response.getAudioContent().toByteArray();
 	}
 
 }
