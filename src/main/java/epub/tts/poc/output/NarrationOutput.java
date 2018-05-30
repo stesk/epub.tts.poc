@@ -2,16 +2,13 @@ package epub.tts.poc.output;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class NarrationOutput {
 	
 	private ByteArrayOutputStream audioData = new ByteArrayOutputStream();
 	private double duration = 0;
-	private String id;
-	
-	public NarrationOutput(String id) {
-		this.id = id;
-	}
+	private HashMap<String,String> idOffsets = new HashMap<String,String>();
 	
 	public void addBytes(byte[] audioBytes) throws IOException {
 		// WARNING! Method for calculating duration is inexact and assumes a
@@ -25,12 +22,16 @@ public class NarrationOutput {
 		return audioData.toByteArray();
 	}
 	
-	public String getId() {
-		return id;
+	public double getDuration() {
+		return duration;
+	}
+	
+	public HashMap<String,String> getIdOffsets() {
+		return idOffsets;
 	}
 	
 	public void mark(String id) {
-		System.out.println("Id: " + id + ", at " + duration + "s");
+		idOffsets.put(id, String.format("%.3f", duration));
 	}
 
 }

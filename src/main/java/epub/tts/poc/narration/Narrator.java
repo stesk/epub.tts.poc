@@ -42,22 +42,13 @@ public class Narrator {
 		return ttsClient;
 	}
 	
-	public Iterable<NarrationOutput> narrate(Iterable<DivisionInput> divisions)
-			throws IOException {
-		LinkedList<NarrationOutput> outputs =
-				new LinkedList<NarrationOutput>();
-		int count = 1;
-		for (DivisionInput division : divisions) {
-			NarrationOutput output = new NarrationOutput(String.format(
-					"%03d", count++));
-			for (BlockInput block : division) {
-				output.mark(block.getId());
-				for (TextInput text : block)
-					output.addBytes(narrateText(text));
-			}
-			outputs.add(output);
+	public NarrationOutput narrate(DivisionInput division) throws IOException {
+		NarrationOutput output = new NarrationOutput();
+		for (BlockInput block : division) {
+			output.mark(block.getId());
+			for (TextInput text : block) output.addBytes(narrateText(text));
 		}
-		return outputs;
+		return output;
 		
 	}
 	
