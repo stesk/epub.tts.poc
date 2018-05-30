@@ -90,7 +90,7 @@ public class HtmlParser {
 		BlockInput block = new BlockInput(blockNode.getAttributeValue(
 				new QName("id")));
 		XPathSelector langSelector = XmlUtilities.getXpathSelector(
-				"ancestor-or-self::*[@lang][1]/@lang");
+				"ancestor::*[@lang][1]/@lang");
 		XdmSequenceIterator textIterator = iterateXpathOnNode(
 				"descendant::text()", blockNode);
 		while (textIterator.hasNext()) {
