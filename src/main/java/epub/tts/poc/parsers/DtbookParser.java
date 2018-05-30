@@ -1,20 +1,18 @@
 package epub.tts.poc.parsers;
 
-public class DtbookParser extends XmlParser {
+import java.io.File;
+import java.util.LinkedList;
+
+import epub.tts.poc.narration.DivisionInput;
+import net.sf.saxon.s9api.SaxonApiException;
+
+public class DtbookParser extends HtmlParser {
 	
-	public static final String[] DTBOOK_TEXT_BLOCK_ELEMENTS = new String[] {
-			"dd",
-			"dt",
-			"hd",
-			"levelhd",
-			"li",
-			"p",
-			"table"
-	};
-	
-	public DtbookParser() {
-		super("/dtbook/book/(frontmatter|bodymatter|rearmatter)/level", String
-				.join("|", DTBOOK_TEXT_BLOCK_ELEMENTS));
+	@Override
+	public LinkedList<DivisionInput> parseFile(File htmlFile)
+			throws SaxonApiException {
+		return parseDocument(getDocumentNode(htmlFile,
+					"/epub/tts/poc/parsers/xslt/preprocess-dtbook.xsl"));
 	}
 
 }
