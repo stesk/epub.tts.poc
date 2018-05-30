@@ -5,7 +5,10 @@ import java.util.LinkedList;
 
 import javax.xml.transform.stream.StreamSource;
 
+import epub.tts.poc.narration.BlockInput;
+import epub.tts.poc.narration.DivisionInput;
 import epub.tts.poc.narration.Language;
+import epub.tts.poc.narration.TextInput;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -51,12 +54,12 @@ public class XmlParser {
 		return selector.evaluate().iterator();
 	}
 	
-	public LinkedList<TextDivision> parse(File htmlFile)
+	public LinkedList<DivisionInput> parse(File htmlFile)
 			throws SaxonApiException {
 		// Generic implementation of file parsing. Subclasses can call this,
 		// supplying an appropriate XPath expression for their specific format,
 		// when overriding parse(File)
-		LinkedList<TextDivision> divisions = new LinkedList<TextDivision>();
+		LinkedList<DivisionInput> divisions = new LinkedList<DivisionInput>();
 		XdmNode documentNode = getDocumentNode(htmlFile, true);
 		XdmSequenceIterator divisionIterator = iterateXpathOnNode(
 				divisionXpath, documentNode);
@@ -65,12 +68,12 @@ public class XmlParser {
 		return divisions;
 	}
 	
-	private TextDivision parseDivision(XdmNode divisionNode)
+	private DivisionInput parseDivision(XdmNode divisionNode)
 			throws SaxonApiException {
 		// Generic implementation of division parsing. Subclasses can call this,
 		// supplying an appropriate XPath expression for their specific format,
 		// when overriding parse(XdmNode)
-		TextDivision division = new TextDivision(divisionNode);
+		DivisionInput division = new DivisionInput(divisionNode);
 		// We want the innermost block elements, e.g. block elements with no
 		// other block elements as their children
 		// TODO: Test this to make sure it works as intended
@@ -81,8 +84,8 @@ public class XmlParser {
 		return division;
 	}
 
-	private TextBlock parseBlock(XdmNode blockNode) throws SaxonApiException {
-		TextBlock textBlock = new TextBlock(blockNode.getAttributeValue(
+	private BlockInput parseBlock(XdmNode blockNode) throws SaxonApiException {
+		BlockInput block = new BlockInput(blockNode.getAttributeValue(
 				new QName("id")));
 		XPathSelector langSelector = xpathCompiler.compile(
 				"ancestor-or-self::*[@lang][1]/@lang").load();
@@ -93,10 +96,10 @@ public class XmlParser {
 			langSelector.setContextItem(textNode);
 			String langValue = langSelector.evaluateSingle()
 					.getStringValue();
-			textBlock.add(new TextFragment(Language.getLanguage(langValue),
-					textNode.getStringValue().replaceAll("\\s+", " ")));
+			block.add(new TextInput(textNode.getStringValue().replaceAll(
+					"\\s+", " "), Language.getLanguage(langValue)));
 		}
-		return textBlock;
+		return block;
 	}
 
 }
