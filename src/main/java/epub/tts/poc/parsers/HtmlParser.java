@@ -3,10 +3,10 @@ package epub.tts.poc.parsers;
 import java.io.File;
 import java.util.LinkedList;
 
-import epub.tts.poc.narration.BlockInput;
-import epub.tts.poc.narration.DivisionInput;
+import epub.tts.poc.input.BlockInput;
+import epub.tts.poc.input.DivisionInput;
+import epub.tts.poc.input.TextInput;
 import epub.tts.poc.narration.Language;
-import epub.tts.poc.narration.TextInput;
 import epub.tts.poc.xml.XmlUtilities;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;

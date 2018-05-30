@@ -1,6 +1,8 @@
-package epub.tts.poc.narration;
+package epub.tts.poc.input;
 
 import com.google.cloud.texttospeech.v1beta1.SynthesisInput;
+
+import epub.tts.poc.narration.Language;
 
 public class TextInput {
 	

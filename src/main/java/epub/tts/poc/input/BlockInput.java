@@ -1,4 +1,4 @@
-package epub.tts.poc.narration;
+package epub.tts.poc.input;
 
 import java.util.LinkedList;
 

@@ -12,6 +12,9 @@ import com.google.cloud.texttospeech.v1beta1.SynthesizeSpeechResponse;
 import com.google.cloud.texttospeech.v1beta1.TextToSpeechClient;
 import com.google.cloud.texttospeech.v1beta1.VoiceSelectionParams;
 
+import epub.tts.poc.input.BlockInput;
+import epub.tts.poc.input.DivisionInput;
+import epub.tts.poc.input.TextInput;
 import epub.tts.poc.output.NarrationOutput;
 
 public class Narrator {
