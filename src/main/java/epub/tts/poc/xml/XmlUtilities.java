@@ -7,6 +7,7 @@ import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmNode;
@@ -31,6 +32,14 @@ public class XmlUtilities {
 	
 	public static XdmNode getDocumentNode(File file) throws SaxonApiException {
 		return getDocumentBuilder().build(file);
+	}
+	
+	public static Serializer getSerializer() {
+		return processor.newSerializer();
+	}
+	
+	public static Serializer getSerializer(File file) {
+		return processor.newSerializer(file);
 	}
 	
 	public static XPathSelector getXpathSelector(String xpath)
