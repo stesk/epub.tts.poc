@@ -1,6 +1,5 @@
 package epub.tts.poc.parsers;
 
-import java.io.File;
 import java.util.LinkedList;
 
 import epub.tts.poc.input.BlockInput;
@@ -33,19 +32,6 @@ public class HtmlParser {
 			"html:table"
 	};
 	
-	public HtmlParser() {
-	}
-	
-	protected XdmNode getDocumentNode(File file, String preprocessorXslt)
-			throws SaxonApiException {
-		XdmNode document = XmlUtilities.getDocumentNode(file);
-		Xslt30Transformer preprocessor = XmlUtilities.getXsltTransformer(
-				preprocessorXslt);
-		XdmDestination preprocessorDestination = new XdmDestination();
-		preprocessor.applyTemplates(document, preprocessorDestination);
-		return preprocessorDestination.getXdmNode();
-	}
-	
 	private XdmSequenceIterator iterateXpathOnNode(String xpath, XdmNode node)
 			throws SaxonApiException {
 		XPathSelector selector = XmlUtilities.getXpathSelector(xpath);
@@ -53,20 +39,14 @@ public class HtmlParser {
 		return selector.evaluate().iterator();
 	}
 	
-	protected LinkedList<DivisionInput> parseDocument(XdmNode documentNode)
+	public LinkedList<DivisionInput> parse(XdmNode document)
 			throws SaxonApiException {
 		LinkedList<DivisionInput> divisions = new LinkedList<DivisionInput>();
 		XdmSequenceIterator divisionIterator = iterateXpathOnNode(
-				"/html:html/html:body/html:section", documentNode);
+				"/html:html/html:body/html:section", document);
 		while (divisionIterator.hasNext())
 			divisions.add(parseDivision((XdmNode)divisionIterator.next()));
 		return divisions;
-	}
-	
-	public LinkedList<DivisionInput> parseFile(File htmlFile)
-			throws SaxonApiException {
-		return parseDocument(getDocumentNode(htmlFile,
-				"/epub/tts/poc/parsers/xslt/preprocess-xhtml.xsl"));
 	}
 	
 	private DivisionInput parseDivision(XdmNode divisionNode)
