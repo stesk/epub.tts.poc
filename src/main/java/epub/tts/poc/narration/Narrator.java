@@ -1,9 +1,6 @@
 package epub.tts.poc.narration;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.LinkedList;
 
 import com.google.cloud.texttospeech.v1beta1.AudioConfig;
 import com.google.cloud.texttospeech.v1beta1.AudioEncoding;
