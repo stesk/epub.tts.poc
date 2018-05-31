@@ -2,20 +2,25 @@ package epub.tts.poc.output;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedList;
 
 public class NarrationOutput {
 	
 	private ByteArrayOutputStream audioData = new ByteArrayOutputStream();
 	private double duration = 0;
-	private HashMap<String,String> idOffsets = new HashMap<String,String>();
+	private LinkedList<BlockOffset> offsets = new LinkedList<BlockOffset>();
 	
 	public void addBytes(byte[] audioBytes) throws IOException {
+		// Write bytes to the stream
+		audioData.write(audioBytes);
+		// Calculate duration of submitted bytes and increase total duration
 		// WARNING! Method for calculating duration is inexact and assumes a
 		// bitrate of 32 kbps
 		// TODO: Check audio output in a more robust fashion
 		duration += (double)audioBytes.length * 8 / 32 / 1000;
-		audioData.write(audioBytes);
+		// Set end offset for current block
+		// TODO: Find a more intuitive way of doing this
+		offsets.getLast().setEndOffset(duration);
 	}
 	
 	public byte[] getBytes() {
@@ -26,12 +31,15 @@ public class NarrationOutput {
 		return duration;
 	}
 	
-	public HashMap<String,String> getIdOffsets() {
-		return idOffsets;
+	public LinkedList<BlockOffset> getOffsets() {
+		return offsets;
 	}
 	
 	public void mark(String id) {
-		idOffsets.put(id, String.format("%.3f", duration));
+		// Add new block
+		// Only the start offset is known at this point; the end offset will be
+		// updated by the addBytes(byte[]) method
+		offsets.add(new BlockOffset(id, duration));
 	}
 
 }
