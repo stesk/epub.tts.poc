@@ -4,15 +4,12 @@ import com.google.cloud.texttospeech.v1beta1.SynthesisInput;
 
 import epub.tts.poc.narration.Language;
 
-public class TextInput {
+public abstract class TextInput {
 	
-	private SynthesisInput input;
-	private Language language;
+	SynthesisInput input;
+	Language language;
 	
-	public TextInput(String text, Language language) {
-		input = SynthesisInput.newBuilder()
-				.setText(text)
-				.build();
+	public TextInput(Language language) {
 		this.language = language;
 	}
 	
@@ -22,12 +19,6 @@ public class TextInput {
 	
 	public Language getLanguage() {
 		return language;
-	}
-	
-	public void mergeInput(TextInput other) {
-		input = input.toBuilder()
-				.setText(input.getText() + other.getInput().getText())
-				.build();
 	}
 
 }
