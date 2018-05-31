@@ -29,7 +29,7 @@ public class BlockOffset {
 	}
 	
 	public String getStartOffsetTruncated() {
-		return String.format("%.3f", endOffset);
+		return String.format("%.3f", startOffset);
 	}
 	
 	public void setEndOffset(double endOffset) {
