@@ -10,8 +10,7 @@ public class HtmlPreprocessor extends Preprocessor {
 
 	@Override
 	public XdmNode preprocess(File file) throws SaxonApiException {
-		return preprocessWithXslt(XmlUtilities.getDocumentNode(file),
-				"/epub/tts/poc/parsers/xslt/preprocess-html.xsl");
+		return preprocess(XmlUtilities.getDocumentNode(file));
 	}
 
 	@Override
