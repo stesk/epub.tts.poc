@@ -14,4 +14,10 @@ public class DtbookPreprocessor extends Preprocessor {
 				"/epub/tts/poc/parsers/xslt/preprocess-dtbook.xsl");
 	}
 
+	@Override
+	public XdmNode preprocess(XdmNode document) throws SaxonApiException {
+		return preprocessWithXslt(document,
+				"/epub/tts/poc/parsers/xslt/preprocess-dtbook.xsl");
+	}
+
 }

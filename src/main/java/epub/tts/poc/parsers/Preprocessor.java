@@ -10,6 +10,9 @@ import net.sf.saxon.s9api.Xslt30Transformer;
 
 public abstract class Preprocessor {
 	
+	public abstract XdmNode preprocess(XdmNode document)
+			throws SaxonApiException;
+	
 	public abstract XdmNode preprocess(File file) throws SaxonApiException;
 	
 	protected XdmNode preprocessWithXslt(XdmNode document, String xslt)
