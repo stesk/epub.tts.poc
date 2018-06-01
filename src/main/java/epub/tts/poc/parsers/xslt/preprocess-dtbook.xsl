@@ -31,6 +31,7 @@
                     <xsl:value-of select="$TITLE"/>
                 </title>
                 <meta name="dc:identifier" content="{$PID}"/>
+                <meta name="dc:title" content="{$TITLE}"/>
                 <meta name="viewport" content="width=device-width"/>
             </head>
             <body>
