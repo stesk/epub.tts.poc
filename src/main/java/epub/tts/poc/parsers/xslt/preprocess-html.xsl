@@ -18,4 +18,10 @@
             <xsl:apply-templates select="@*|node()"/>
         </xsl:copy>
     </xsl:template>
+    <xsl:template match="html:section">
+        <section>
+            <xsl:apply-templates select="@*|node()[not(self::html:section)]"/>
+        </section>
+        <xsl:apply-templates select="html:section"/>
+    </xsl:template>
 </xsl:stylesheet>
