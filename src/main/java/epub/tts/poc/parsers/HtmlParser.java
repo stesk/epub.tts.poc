@@ -52,10 +52,11 @@ public class HtmlParser {
 	
 	private DivisionInput parseDivision(XdmNode divisionNode)
 			throws SaxonApiException {
-		// Generic implementation of division parsing. Subclasses can call this,
-		// supplying an appropriate XPath expression for their specific format,
-		// when overriding parse(XdmNode)
-		DivisionInput division = new DivisionInput(divisionNode);
+		XdmItem heading = XmlUtilities.evaluateXpathOnNode(
+				"html:h1|html:h2|html:h3|html:h4|html:h5|html:6",
+				divisionNode);
+		String title = heading == null? "***" : heading.getStringValue();
+		DivisionInput division = new DivisionInput(title);
 		// We want the innermost block elements, e.g. block elements with no
 		// other block elements as their children
 		// TODO: Test this to make sure it works as intended

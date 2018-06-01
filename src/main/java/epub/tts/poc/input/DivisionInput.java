@@ -2,18 +2,16 @@ package epub.tts.poc.input;
 
 import java.util.LinkedList;
 
-import net.sf.saxon.s9api.XdmNode;
-
 public class DivisionInput extends LinkedList<BlockInput> {
 	
-	private XdmNode content;
+	private String title;
 	
-	public DivisionInput(XdmNode contentNode) {
-		this.content = contentNode;
+	public DivisionInput(String title) {
+		this.title = title;
 	}
 	
-	public XdmNode getContent() {
-		return content;
+	public String getTitle() {
+		return title;
 	}
 
 }
