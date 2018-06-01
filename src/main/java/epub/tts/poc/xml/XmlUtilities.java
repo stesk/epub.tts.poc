@@ -2,6 +2,7 @@ package epub.tts.poc.xml;
 
 import java.io.File;
 
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.DocumentBuilder;
@@ -10,6 +11,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathSelector;
+import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
@@ -26,6 +28,13 @@ public class XmlUtilities {
 		xpathCompiler = processor.newXPathCompiler();
 		xpathCompiler.declareNamespace("html", "http://www.w3.org/1999/xhtml");
 		xsltCompiler = processor.newXsltCompiler();
+	}
+	
+	public static XdmNode applyXslt(Source source, String xslt)
+			throws SaxonApiException {
+		XdmDestination destination = new XdmDestination();
+		getXsltTransformer(xslt).applyTemplates(source, destination);
+		return destination.getXdmNode();
 	}
 	
 	public static DocumentBuilder getDocumentBuilder() {
