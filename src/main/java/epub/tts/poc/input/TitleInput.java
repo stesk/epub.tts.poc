@@ -9,5 +9,9 @@ public class TitleInput extends LinkedList<DivisionInput> {
 	public TitleInput(String pid) {
 		this.pid = pid;
 	}
+	
+	public String getPid() {
+		return pid;
+	}
 
 }
