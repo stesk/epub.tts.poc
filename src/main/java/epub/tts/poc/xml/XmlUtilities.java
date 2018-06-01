@@ -10,7 +10,9 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathSelector;
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltCompiler;
 
@@ -51,6 +53,20 @@ public class XmlUtilities {
 			throws SaxonApiException {
 		return xsltCompiler.compile(new StreamSource(XmlUtilities.class
 				.getResourceAsStream(source))).load30();
+	}
+	
+	public static XdmItem evaluateXpathOnNode(String xpath, XdmNode node)
+			throws SaxonApiException {
+		XPathSelector selector = getXpathSelector(xpath);
+		selector.setContextItem(node);
+		return selector.evaluateSingle();
+	}
+	
+	public static XdmSequenceIterator iterateXpathOnNode(String xpath,
+			XdmNode node) throws SaxonApiException {
+		XPathSelector selector = getXpathSelector(xpath);
+		selector.setContextItem(node);
+		return selector.evaluate().iterator();
 	}
 
 }
