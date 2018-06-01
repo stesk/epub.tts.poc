@@ -1,15 +1,15 @@
 package epub.tts.poc.parsers;
 
-import java.util.LinkedList;
-
 import epub.tts.poc.input.BlockInput;
 import epub.tts.poc.input.DivisionInput;
 import epub.tts.poc.input.PlainTextInput;
+import epub.tts.poc.input.TitleInput;
 import epub.tts.poc.narration.Language;
 import epub.tts.poc.xml.XmlUtilities;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathSelector;
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 
@@ -36,21 +36,18 @@ public class HtmlParser {
 		this.ssmlEnabled = ssmlEnabled;
 	}
 	
-	private XdmSequenceIterator iterateXpathOnNode(String xpath, XdmNode node)
+	public TitleInput parse(XdmNode document)
 			throws SaxonApiException {
-		XPathSelector selector = XmlUtilities.getXpathSelector(xpath);
-		selector.setContextItem(node);
-		return selector.evaluate().iterator();
-	}
-	
-	public LinkedList<DivisionInput> parse(XdmNode document)
-			throws SaxonApiException {
-		LinkedList<DivisionInput> divisions = new LinkedList<DivisionInput>();
-		XdmSequenceIterator divisionIterator = iterateXpathOnNode(
+		XdmItem pidValue = XmlUtilities.evaluateXpathOnNode(
+				"/dtbook/head/meta[@name eq 'dc:identifier']/@content",
+				document);
+		TitleInput title = new TitleInput(pidValue == null ? "dk-nota-000000"
+				: pidValue.getStringValue());
+		XdmSequenceIterator divisionIterator = XmlUtilities.iterateXpathOnNode(
 				"/html:html/html:body/html:section", document);
 		while (divisionIterator.hasNext())
-			divisions.add(parseDivision((XdmNode)divisionIterator.next()));
-		return divisions;
+			title.add(parseDivision((XdmNode)divisionIterator.next()));
+		return title;
 	}
 	
 	private DivisionInput parseDivision(XdmNode divisionNode)
@@ -62,7 +59,7 @@ public class HtmlParser {
 		// We want the innermost block elements, e.g. block elements with no
 		// other block elements as their children
 		// TODO: Test this to make sure it works as intended
-		XdmSequenceIterator blockIterator = iterateXpathOnNode(
+		XdmSequenceIterator blockIterator = XmlUtilities.iterateXpathOnNode(
 				".//(" + String.join("|", HTML_TEXT_BLOCK_ELEMENTS) + ")",
 				divisionNode);
 		while (blockIterator.hasNext())
@@ -75,7 +72,7 @@ public class HtmlParser {
 				new QName("id")));
 		XPathSelector langSelector = XmlUtilities.getXpathSelector(
 				"ancestor::*[@lang][1]/@lang");
-		XdmSequenceIterator textIterator = iterateXpathOnNode(
+		XdmSequenceIterator textIterator = XmlUtilities.iterateXpathOnNode(
 				"descendant::text()", blockNode);
 		while (textIterator.hasNext()) {
 			XdmNode textNode = (XdmNode)textIterator.next();
