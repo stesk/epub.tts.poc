@@ -10,6 +10,7 @@ public abstract class TextInput {
 	Language language;
 	
 	public TextInput(Language language) {
+		input = SynthesisInput.newBuilder().build();
 		this.language = language;
 	}
 	
