@@ -14,6 +14,7 @@
                 <meta http-equiv="content-type"
                     content="application/xhtml+xml; charset=UTF-8" />
                 <title><xsl:value-of select="head/title"/></title>
+                <xsl:apply-templates select="head/meta"/>
             </head>
             <body>
                 <xsl:apply-templates
@@ -55,6 +56,11 @@
             <xsl:apply-templates select="@*|node()"/>
         </xsl:element>
     </xsl:template>
+    <xsl:template
+        match="meta[@name = ('dc:identifier', 'dc:creator', 'dc:title')]">
+        <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:template match="meta"/>
     <xsl:template match="note">
         <div class="note">
             <xsl:call-template name="INSERT_ID_IF_MISSING"/>
