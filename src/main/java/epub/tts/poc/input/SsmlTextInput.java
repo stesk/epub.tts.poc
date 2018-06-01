@@ -11,4 +11,9 @@ public class SsmlTextInput extends TextInput {
 				.build();
 	}
 
+	@Override
+	public void mergeInput(TextInput input) {
+		
+	}
+
 }

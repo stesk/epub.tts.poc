@@ -20,5 +20,7 @@ public abstract class TextInput {
 	public Language getLanguage() {
 		return language;
 	}
+	
+	public abstract void mergeInput(TextInput input);
 
 }
