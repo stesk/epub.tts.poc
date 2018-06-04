@@ -12,8 +12,7 @@ public class NccSerializer extends XmlSerializer {
 		super(document);
 	}
 	
-	@Override
-	public File serializeToFile(File file) throws SaxonApiException {
+	public File serializeNccToFile(File file) throws SaxonApiException {
 		document = XmlUtilities.applyXslt(document.asSource(),
 				"/epub/tts/poc/output/xslt/generate-ncc.xsl");
 		return super.serializeToFile(file);

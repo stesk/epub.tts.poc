@@ -17,9 +17,10 @@ public class XmlSerializer {
 		serializer = XmlUtilities.getSerializer();
 	}
 	
-	public File serializeToFile(File file) throws SaxonApiException {
+	protected File serializeToFile(File file) throws SaxonApiException {
 		serializer.setOutputFile(file);
 		serializer.serializeNode(document);
+		serializer.close();
 		return file;
 	}
 
