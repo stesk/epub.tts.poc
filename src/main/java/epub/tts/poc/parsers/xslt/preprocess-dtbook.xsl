@@ -214,7 +214,8 @@
     <xsl:template match="noteref">
         <a epub:type="noteref" class="noteref"
             href="{replace(@idref, '^#', '')}">
-            <xsl:apply-templates select="@* except @class|node()"/>
+            <xsl:apply-templates select="@* except @class"/>
+            <xsl:value-of select="'[' || 'note ' || text() || ']'"/>
         </a>
     </xsl:template>
     <xsl:template
