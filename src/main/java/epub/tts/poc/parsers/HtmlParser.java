@@ -53,7 +53,7 @@ public class HtmlParser {
 	private DivisionInput parseDivision(XdmNode divisionNode)
 			throws SaxonApiException {
 		XdmItem heading = XmlUtilities.evaluateXpathOnNode(
-				"html:h1|html:h2|html:h3|html:h4|html:h5|html:6",
+				"html:h1|html:h2|html:h3|html:h4|html:h5|html:h6",
 				divisionNode);
 		String title = heading == null? "***" : heading.getStringValue();
 		DivisionInput division = new DivisionInput(title);
