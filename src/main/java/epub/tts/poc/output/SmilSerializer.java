@@ -8,6 +8,7 @@ import java.util.List;
 import epub.tts.poc.xml.XmlUtilities;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
@@ -20,6 +21,10 @@ public class SmilSerializer extends XmlSerializer {
 	public SmilSerializer(XdmNode document, String htmlFileName) {
 		super(document);
 		this.htmlFileName = htmlFileName;
+		serializer.setOutputProperty(Serializer.Property.DOCTYPE_PUBLIC,
+				"-//W3C//DTD SMIL 1.0//EN");
+		serializer.setOutputProperty(Serializer.Property.DOCTYPE_SYSTEM,
+				"http://www.w3.org/TR/REC-smil/SMIL10.dtd");
 	}
 	
 	public File serializeMasterSmilToFile(File file) throws SaxonApiException {

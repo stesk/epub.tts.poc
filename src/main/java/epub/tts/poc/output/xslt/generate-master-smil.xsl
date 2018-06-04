@@ -18,19 +18,23 @@
             </head>
             <body>
                 <xsl:apply-templates
-                    select="html:body/html:section/(html:h1|html:h2|html:h3|
-                            html:h4|html:h5|html:h6)"/>
+                    select="html:body/html:section"/>
             </body>
         </smil>
     </xsl:template>
-    <xsl:template match="html:h1|html:h2|html:h3|html:h4|html:h5|html:h6">
-        <xsl:variable name="position" as="xs:integer"
-            select="count(parent::html:section/
-                    preceding-sibling::html:section)"/>
-        <ref id="{@id}" src="{format-number($position, '0000') || '.smil'}"
-            title="{string-join(.//text()[not(parent::a/@class = 'noteref')], '')}"/>
-    </xsl:template>
     <xsl:template match="html:meta[@name = ('dc:identifier', 'dc:title')]">
         <meta name="{@name}" content="{@content}"/>
+    </xsl:template>
+    <xsl:template match="html:section">
+        <xsl:variable name="element" as="element()"
+            select="(html:h1|html:h2|html:h3|html:h4|html:h5|html:h6)[1]"/>
+        <xsl:variable name="title" as="xs:string"
+            select="string-join($element//text()[not(parent::a/
+                    @class = 'noteref')], '')"/>
+        <xsl:variable name="position" as="xs:integer"
+            select="count(preceding-sibling::html:section) + 1"/>
+        <ref id="{'smil' || format-number($position, '0000')}"
+            src="{format-number($position, '0000') || '.smil'}"
+            title="{$title}"/>
     </xsl:template>
 </xsl:stylesheet>
