@@ -1,5 +1,7 @@
 package epub.tts.poc.output;
 
+import java.util.Locale;
+
 public class BlockOffset {
 	
 	private String blockId;
@@ -21,7 +23,7 @@ public class BlockOffset {
 	}
 	
 	public String getEndOffsetTruncated() {
-		return String.format("%.3f", endOffset);
+		return String.format(Locale.ROOT, "%.3f", endOffset);
 	}
 	
 	public double getStartOffset() {
@@ -29,7 +31,7 @@ public class BlockOffset {
 	}
 	
 	public String getStartOffsetTruncated() {
-		return String.format("%.3f", startOffset);
+		return String.format(Locale.ROOT, "%.3f", startOffset);
 	}
 	
 	public void setEndOffset(double endOffset) {
