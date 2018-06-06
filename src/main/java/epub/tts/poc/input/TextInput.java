@@ -22,6 +22,14 @@ public abstract class TextInput {
 		return language;
 	}
 	
-	public abstract void mergeInput(TextInput input);
+	public void mergeInput(TextInput input) {
+		if (input instanceof PlainTextInput) mergeInput((PlainTextInput)input);
+		else if (input instanceof SsmlTextInput)
+			mergeInput((SsmlTextInput)input);
+	}
+	
+	public abstract void mergeInput(PlainTextInput input);
+	
+	public abstract void mergeInput(SsmlTextInput input);
 
 }
