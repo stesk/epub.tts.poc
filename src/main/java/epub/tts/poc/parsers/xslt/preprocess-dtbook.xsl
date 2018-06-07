@@ -213,9 +213,8 @@
         match="note[d2e:is-foot-or-rearnote(.)][d2e:is-preceded-by-note(.)]"/>
     <xsl:template match="noteref">
         <a epub:type="noteref" class="noteref"
-            href="{replace(@idref, '^#', '')}">
-            <xsl:apply-templates select="@* except @class"/>
-            <xsl:value-of select="'[' || 'note ' || text() || ']'"/>
+            href="{'#' || replace(@idref, '^#', '')}">
+            <xsl:apply-templates select="@* except @class|node()"/>
         </a>
     </xsl:template>
     <xsl:template
