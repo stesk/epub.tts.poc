@@ -1,8 +1,12 @@
 package epub.tts.poc.parsers;
 
+import java.io.File;
+
 import epub.tts.poc.input.BlockInput;
 import epub.tts.poc.input.DivisionInput;
 import epub.tts.poc.input.PlainTextInput;
+import epub.tts.poc.input.SsmlTextInput;
+import epub.tts.poc.input.TextInput;
 import epub.tts.poc.input.TitleInput;
 import epub.tts.poc.narration.Language;
 import epub.tts.poc.xml.XmlUtilities;
@@ -12,6 +16,7 @@ import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
+import net.sf.saxon.s9api.Xslt30Transformer;
 
 public class HtmlParser {
 	
@@ -57,18 +62,24 @@ public class HtmlParser {
 				divisionNode);
 		String title = heading == null? "***" : heading.getStringValue();
 		DivisionInput division = new DivisionInput(title);
-		// We want the innermost block elements, e.g. block elements with no
-		// other block elements as their children
-		// TODO: Test this to make sure it works as intended
+		// We want the outermost text-containing elements
 		XdmSequenceIterator blockIterator = XmlUtilities.iterateXpathOnNode(
-				".//(" + String.join("|", HTML_TEXT_BLOCK_ELEMENTS) + ")",
+				String.format(".//(%s)[not(ancestor::%s)]",
+						String.join("|", HTML_TEXT_BLOCK_ELEMENTS),
+						String.join("|ancestor::", HTML_TEXT_BLOCK_ELEMENTS)),
 				divisionNode);
 		while (blockIterator.hasNext())
 			division.add(parseBlock((XdmNode)blockIterator.next()));
 		return division;
 	}
-
+	
 	private BlockInput parseBlock(XdmNode blockNode) throws SaxonApiException {
+		if (ssmlEnabled) return parseBlockSsml(blockNode);
+		else return parseBlockPlain(blockNode);
+	}
+
+	private BlockInput parseBlockPlain(XdmNode blockNode)
+			throws SaxonApiException {
 		BlockInput block = new BlockInput(blockNode.getAttributeValue(
 				new QName("id")));
 		XPathSelector langSelector = XmlUtilities.getXpathSelector(
@@ -80,12 +91,46 @@ public class HtmlParser {
 			langSelector.setContextItem(textNode);
 			String langValue = langSelector.evaluateSingle()
 					.getStringValue();
-			if (ssmlEnabled) {
-				
-			} else block.add(new PlainTextInput(textNode.getStringValue()
+			block.add(new PlainTextInput(textNode.getStringValue()
 					.replaceAll("\\s+", " "), Language.getLanguage(langValue)));
 		}
 		return block;
+	}
+	
+	private BlockInput parseBlockSsml(XdmNode blockNode)
+			throws SaxonApiException {
+		BlockInput block = new BlockInput(blockNode.getAttributeValue(
+				new QName("id")));
+		Xslt30Transformer ssmlTransformer = XmlUtilities.getXsltTransformer(
+				"/epub/tts/poc/parsers/xslt/generate-ssml.xsl");
+		ssmlTransformer.applyTemplates(blockNode).forEach(
+				item -> {
+					XdmNode node = (XdmNode)item;
+					String langValue = node.getAttributeValue(new QName(
+							"lang"));
+					block.add(new SsmlTextInput(node,
+						Language.getLanguage(langValue)));
+				});
+		return block;
+	}
+	
+	public static void main(String[] args) {
+		HtmlParser htmlParser = new HtmlParser(true);
+		try {
+			TitleInput title = htmlParser.parse(XmlUtilities.getDocumentNode(
+					new File("files/ssml-test.html")));
+			for (DivisionInput division : title) {
+				for (BlockInput block : division) {
+					for (TextInput text : block) {
+						SsmlTextInput ssmlInput = (SsmlTextInput)text;
+						System.out.println(ssmlInput.getInput().getSsml());
+					}
+				}
+			}
+		} catch (SaxonApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
