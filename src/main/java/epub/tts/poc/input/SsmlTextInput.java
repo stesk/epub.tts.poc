@@ -1,9 +1,6 @@
 package epub.tts.poc.input;
 
-import java.io.StringReader;
 import java.util.Collections;
-
-import javax.xml.transform.stream.StreamSource;
 
 import epub.tts.poc.narration.Language;
 import epub.tts.poc.xml.XmlUtilities;
