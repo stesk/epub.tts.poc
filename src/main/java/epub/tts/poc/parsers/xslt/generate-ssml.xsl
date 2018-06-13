@@ -7,8 +7,9 @@
     version="3.0">
     <xsl:output method="xml" indent="no"/>
     <xsl:template match="html:*">
-        <xsl:for-each-group group-adjacent="ancestor::html:*[@lang][1]/@lang"
-            select=".//text()">
+        <xsl:for-each-group
+            group-adjacent="ancestor-or-self::html:*[@lang][1]/@lang"
+            select=".//html:span[@class eq 'sentence']">
             <ssml lang="{current-grouping-key()}">
                 <xsl:apply-templates select="current-group()"/>
             </ssml>
@@ -37,5 +38,18 @@
         <say-as interpret-as="characters">
             <xsl:copy/>
         </say-as>
+    </xsl:template>
+    <xsl:template match="html:span[@class eq 'sentence']">
+        <s>
+            <xsl:apply-templates select=".//text()"/>
+        </s>
+    </xsl:template>
+    <xsl:template mode="SENTENCE_INPUT"
+        match="html:span[@class eq 'sentence']">
+        <ssml lang="{ancestor-or-self::html:*[@lang][1]/@lang}">
+            <s>
+                <xsl:apply-templates select=".//text()"/>
+            </s>
+        </ssml>
     </xsl:template>
 </xsl:stylesheet>

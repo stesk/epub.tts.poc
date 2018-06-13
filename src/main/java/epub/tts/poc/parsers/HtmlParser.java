@@ -20,7 +20,7 @@ import net.sf.saxon.s9api.Xslt30Transformer;
 
 public class HtmlParser {
 	
-	private boolean ssmlEnabled = false;
+	protected boolean ssmlEnabled = false;
 	
 	public static final String[] HTML_TEXT_BLOCK_ELEMENTS = new String[] {
 			"html:dd",
@@ -55,7 +55,7 @@ public class HtmlParser {
 		return title;
 	}
 	
-	private DivisionInput parseDivision(XdmNode divisionNode)
+	protected DivisionInput parseDivision(XdmNode divisionNode)
 			throws SaxonApiException {
 		XdmItem heading = XmlUtilities.evaluateXpathOnNode(
 				"html:h1|html:h2|html:h3|html:h4|html:h5|html:h6",
@@ -73,12 +73,12 @@ public class HtmlParser {
 		return division;
 	}
 	
-	private BlockInput parseBlock(XdmNode blockNode) throws SaxonApiException {
+	protected BlockInput parseBlock(XdmNode blockNode) throws SaxonApiException {
 		if (ssmlEnabled) return parseBlockSsml(blockNode);
 		else return parseBlockPlain(blockNode);
 	}
 
-	private BlockInput parseBlockPlain(XdmNode blockNode)
+	protected BlockInput parseBlockPlain(XdmNode blockNode)
 			throws SaxonApiException {
 		BlockInput block = new BlockInput(blockNode.getAttributeValue(
 				new QName("id")));
@@ -97,7 +97,7 @@ public class HtmlParser {
 		return block;
 	}
 	
-	private BlockInput parseBlockSsml(XdmNode blockNode)
+	protected BlockInput parseBlockSsml(XdmNode blockNode)
 			throws SaxonApiException {
 		BlockInput block = new BlockInput(blockNode.getAttributeValue(
 				new QName("id")));
