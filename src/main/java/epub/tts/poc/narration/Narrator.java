@@ -28,7 +28,7 @@ public class Narrator {
 		ttsClient = TextToSpeechClient.create();
 	}
 	
-	private VoiceSelectionParams createVoice(Language language) {
+	protected VoiceSelectionParams createVoice(Language language) {
 		return VoiceSelectionParams.newBuilder()
 				.setLanguageCode(language.getLanguageCode())
 				.setSsmlGender(gender)
