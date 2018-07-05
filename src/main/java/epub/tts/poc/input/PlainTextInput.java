@@ -27,9 +27,6 @@ public class PlainTextInput extends TextInput {
 	@Override
 	public void mergeInput(PlainTextInput other) {
 		addText(other.getInput().getText());
-		input = input.toBuilder()
-				.setText(input.getText() + other.getText())
-				.build();
 	}
 
 	@Override
